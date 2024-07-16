@@ -29,6 +29,35 @@ public class UserController {
 	@Autowired
 	UserService userService;
 
+	@GetMapping("/getAny")
+	public ResponseEntity<Boolean> getAny() {
+		return ResponseEntity.ok(true);
+	}
+
+	@PreAuthorize("hasRole('ROLE_USER')")
+	@GetMapping("/getRoleUser")
+	public ResponseEntity<Boolean> getRoleUser() {
+		return ResponseEntity.ok(true);
+	}
+
+	@PreAuthorize("hasRole('USER')")
+	@GetMapping("/getUser")
+	public ResponseEntity<Boolean> getUser() {
+		return ResponseEntity.ok(true);
+	}
+
+	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	@GetMapping("/getRoleAdmin")
+	public ResponseEntity<Boolean> getRoleAdmin() {
+		return ResponseEntity.ok(true);
+	}
+
+	@PreAuthorize("hasRole('ADMIN')")
+	@GetMapping("/getAdmin")
+	public ResponseEntity<Boolean> getAdmin() {
+		return ResponseEntity.ok(true);
+	}
+
 	/**
 	 * A method named createUser
 	 * 
@@ -97,34 +126,5 @@ public class UserController {
         return ResponseEntity.ok(userService.createUser(usersForm));
 
     }
-
-	@GetMapping("/getAny")
-	public ResponseEntity<Boolean> getAny() {
-		return ResponseEntity.ok(true);
-	}
-
-	@PreAuthorize("hasRole('ROLE_USER')")
-	@GetMapping("/getRoleUser")
-	public ResponseEntity<Boolean> getRoleUser() {
-        return ResponseEntity.ok(true);
-    }
-
-	@PreAuthorize("hasRole('USER')")
-	@GetMapping("/getUser")
-	public ResponseEntity<Boolean> getUser() {
-        return ResponseEntity.ok(true);
-    }
-
-	@PreAuthorize("hasRole('ROLE_ADMIN')")
-	@GetMapping("/getRoleAdmin")
-	public ResponseEntity<Boolean> getRoleAdmin() {
-		return ResponseEntity.ok(true);
-	}
-
-	@PreAuthorize("hasRole('ADMIN')")
-	@GetMapping("/getAdmin")
-	public ResponseEntity<Boolean> getAdmin() {
-		return ResponseEntity.ok(true);
-	}
 
 }
