@@ -17,7 +17,7 @@ public class RewardPoints {
 	@OneToOne
 	// specify the primary key as 'name'
 	@JoinColumn(name = "userId", nullable = false)
-	private Users users;
+	private UsersTemp usersTemp;
 	private LocalDateTime createdTime;
 	private LocalDateTime updatedTime;
 

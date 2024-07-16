@@ -2,6 +2,7 @@ package com.rewards.app.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -96,17 +97,34 @@ public class UserController {
         return ResponseEntity.ok(userService.createUser(usersForm));
 
     }
-	
-	@PostMapping("/createUser7")
-	public ResponseEntity<Boolean> createUser7() {
-        return ResponseEntity.ok(true);
 
-    }
-	
-	@GetMapping("/createUser8")
-	public ResponseEntity<Boolean> createUser8() {
-        return ResponseEntity.ok(true);
+	@GetMapping("/getAny")
+	public ResponseEntity<Boolean> getAny() {
+		return ResponseEntity.ok(true);
+	}
 
+	@PreAuthorize("hasRole('ROLE_USER')")
+	@GetMapping("/getRoleUser")
+	public ResponseEntity<Boolean> getRoleUser() {
+        return ResponseEntity.ok(true);
     }
+
+	@PreAuthorize("hasRole('USER')")
+	@GetMapping("/getUser")
+	public ResponseEntity<Boolean> getUser() {
+        return ResponseEntity.ok(true);
+    }
+
+	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	@GetMapping("/getRoleAdmin")
+	public ResponseEntity<Boolean> getRoleAdmin() {
+		return ResponseEntity.ok(true);
+	}
+
+	@PreAuthorize("hasRole('ADMIN')")
+	@GetMapping("/getAdmin")
+	public ResponseEntity<Boolean> getAdmin() {
+		return ResponseEntity.ok(true);
+	}
 
 }

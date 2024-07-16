@@ -21,7 +21,7 @@ public class Transactions {
 	@ManyToOne
 	// specify the primary key as 'name'
 	@JoinColumn(name = "userId", nullable = false)
-	private Users users;
+	private UsersTemp usersTemp;
 	// specify the instance name used in child entity as the 'mappedBy'
 	@OneToMany(mappedBy = "transactions", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	private Set<TransactionDetails> transactionDetails;

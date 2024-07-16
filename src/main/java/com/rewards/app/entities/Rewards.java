@@ -14,7 +14,7 @@ public class Rewards{
 	private String rewardId;
 	@ManyToOne
 	@JoinColumn(name = "userId", nullable = false)
-	private Users user;
+	private UsersTemp usersTemp;
 	@ManyToOne
 	@JoinColumn(name = "rewardPointsId", nullable = true)
 	private RewardPoints rewardPoints;

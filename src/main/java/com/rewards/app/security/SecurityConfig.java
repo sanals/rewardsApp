@@ -16,7 +16,9 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.provisioning.JdbcUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
@@ -24,11 +26,11 @@ import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
 @EnableWebSecurity
-//@EnableMethodSecurity
+@EnableMethodSecurity// To enable role level authorization. Eg:- @PreAuthorize("hasRole('USER')")
 public class SecurityConfig {
 	
-	@Autowired
-	private UserDetailsService service;
+//	@Autowired
+//	private UserDetailsService service;
 	
 	@Autowired
 	private DataSource dataSource;// check if we need to add this as a @bean
@@ -41,6 +43,8 @@ public class SecurityConfig {
     		.authorizeHttpRequests((auth)->{ 
 	            auth
 	            .requestMatchers("/h2-console/**").permitAll()
+				.requestMatchers("/swagger-ui/**").permitAll()// enable swagger url
+						.requestMatchers("/v3/api-docs/**").permitAll()// enable swagger api docs
 	            .anyRequest().authenticated();
 //	            .permitAll();
             })
@@ -52,32 +56,35 @@ public class SecurityConfig {
         return http.build();
     }
     
-    @Bean
-    public AuthenticationProvider provider() {
-    	DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
-    	provider.setUserDetailsService(service);
-    	provider.setPasswordEncoder(NoOpPasswordEncoder.getInstance());
-    	return provider;
-    }
-    
 //    @Bean
-//    public UserDetailsService userDetailsService() {
-//    	UserDetails user = User.withDefaultPasswordEncoder()
-//    			.username("user")
-//    			.password("userp")
-//    			.roles("USER")
-//    			.build();
-//    	
-//    	UserDetails admin = User.withUsername("admin")
-//    			.password("{noop}adminp")
-//    			.roles("ADMIN")
-//    			.build();
-//    	
-////    	JdbcUserDetailsManager userDetailsManager = new JdbcUserDetailsManager(dataSource);
-////    	userDetailsManager.createUser(user);
-////    	userDetailsManager.createUser(admin);
-////    	return userDetailsManager;
-//    	return new InMemoryUserDetailsManager(user, admin);
-//    } 
+//    public AuthenticationProvider provider() {
+//    	DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
+//    	provider.setUserDetailsService(service);
+//    	provider.setPasswordEncoder(NoOpPasswordEncoder.getInstance());
+//    	return provider;
+//    }
+
+	@Bean
+	public PasswordEncoder passwordEncoder(){
+		return new BCryptPasswordEncoder();
+	}
+    
+    @Bean
+    public UserDetailsService userDetailsService() {
+    	UserDetails user = User.withUsername("user")
+    			.password(passwordEncoder().encode("userp"))
+    			.roles("USER")
+    			.build();
+    	
+    	UserDetails admin = User.withUsername("admin")
+				.password(passwordEncoder().encode("adminp"))
+    			.roles("ADMIN")
+    			.build();
+    	
+    	JdbcUserDetailsManager userDetailsManager = new JdbcUserDetailsManager(dataSource);
+    	userDetailsManager.createUser(user);
+    	userDetailsManager.createUser(admin);
+    	return userDetailsManager;
+    } 
 
 }
