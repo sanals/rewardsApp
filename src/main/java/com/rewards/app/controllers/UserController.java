@@ -1,7 +1,11 @@
 package com.rewards.app.controllers;
 
+import com.rewards.app.security.JwtService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -21,6 +25,9 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import jakarta.validation.Valid;
 
+import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
+
 @RestController
 @RequestMapping("/users")
 public class UserController {
@@ -28,9 +35,46 @@ public class UserController {
 	@Autowired
 	UserService userService;
 
+	@Autowired
+	AuthenticationManager authentonManager;
+
+	@Autowired
+	JwtService jwtService;
+
+	@PostMapping("/login")
+	public ResponseEntity<Object> login(@RequestBody UsersForm usersForm) throws NoSuchAlgorithmException, NoSuchProviderException {
+
+		Authentication authentication = authentonManager.authenticate(new UsernamePasswordAuthenticationToken(usersForm.getUserName(), usersForm.getPassword()));
+
+		String token = "none";
+		if(authentication.isAuthenticated()){
+			token = jwtService.geenrate(usersForm.getUserName());
+			System.out.println("return token");
+		} else {
+			System.out.println("login failed");
+		}
+
+		return ResponseEntity.ok(token);
+	}
+
+	/**
+	 * A method named updateUser
+	 * 
+	 * @param usersForm An object of UsersForm
+	 * @param pathId    A String object for pathId
+	 * @return ResponseEntity<Boolean> This returns a ResponseEntity with Boolean
+	 *         parameter in it
+	 */
+	@PostMapping("/updateUser/{pathId}")
+	@Operation(summary = "Operation summary updateUser", description = "Operation description updateUser")
+	public ResponseEntity<Boolean> updateUser(@Valid @RequestBody UsersForm usersForm,
+			@PathVariable(value = "pathId", required = false) String pathId) {
+		return ResponseEntity.ok(userService.updateUser(usersForm, pathId));
+	}
+
 	/**
 	 * A method named createUser
-	 * 
+	 *
 	 * @param usersForm An object of UsersForm
 	 * @param pathId    A String object for pathId
 	 * @param paramId   A String object for paramId
@@ -40,9 +84,9 @@ public class UserController {
 	@PostMapping("/createUser/{pathId}")
 	@Operation(summary = "Operation summary createUser", description = "Operation description createUser")
 	public ResponseEntity<Boolean> createUser(@Valid @RequestBody UsersForm usersForm,
-			@PathVariable(value = "pathId", required = false) String pathId, // will always show as 'required=true' in
-																				// swagger
-			@RequestParam(value = "paramId", required = false) String paramId) {
+											  @PathVariable(value = "pathId", required = false) String pathId, // will always show as 'required=true' in
+											  // swagger
+											  @RequestParam(value = "paramId", required = false) String paramId) {
 		return ResponseEntity.ok(userService.createUser(usersForm, pathId, paramId));
 	}
 
@@ -80,11 +124,11 @@ public class UserController {
 	}
 	
 	@PostMapping("/createUser5")
-	public ResponseEntity<Boolean> createUser5(@Valid @RequestBody UsersFormBase usersFormBase, BindingResult bindingResult) {
+	public ResponseEntity<Boolean> createUser5(@Valid @RequestBody UsersForm usersForm, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             throw new BadRequestException(bindingResult.getAllErrors().get(0).getDefaultMessage());
         }
-        return ResponseEntity.ok(userService.createUser(usersFormBase));
+        return ResponseEntity.ok(userService.createUser(usersForm));
 
     }
 	
