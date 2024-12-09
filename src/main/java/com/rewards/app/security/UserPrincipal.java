@@ -9,11 +9,11 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import com.rewards.app.entities.Users;
 
-public class UserPrinciples implements UserDetails{
+public class UserPrincipal implements UserDetails{
 
 	Users user; 
-	
-	public UserPrinciples(Users user) {
+
+	public UserPrincipal(Users user) {
 		super();
 		this.user = user;
 	}
